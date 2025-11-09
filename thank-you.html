@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Generated</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { --primary: #0d3b2e; --light: #f8f9fa; --border: #e0e0e0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; }
+        body { background: linear-gradient(135deg, #f0f4f2 0%, #e8f5f0 100%); color: #333; padding: 20px; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .container { background: white; max-width: 500px; width: 100%; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; }
+        .header { text-align: center; padding: 30px 20px; background: linear-gradient(120deg, var(--primary), #082a1f); color: white; }
+        .header h1 { font-weight: 700; font-size: 1.8rem; }
+        .card-body { padding: 30px 20px; }
+        .link-box { background: #eef2ff; border: 1px solid #b3d9ff; padding: 20px; border-radius: 8px; margin-top: 20px; word-break: break-all; font-size: 1.1rem; color: #0d3b2e; }
+        .copy-btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 100%; }
+        .copy-btn:hover { background: #082a1f; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✅ Success!</h1>
+        </div>
+        <div class="card-body">
+            <p>The link for <strong><?= student ?></strong> has been generated.</p>
+            <p>You can now copy this link and send it to them:</p>
+            <div class="link-box" id="linkDisplay"><?= link ?></div>
+            <button class="copy-btn" onclick="copyLink()">📋 Copy Link</button>
+        </div>
+    </div>
+
+    <script>
+        function copyLink() {
+            const link = `<?= link ?>`;
+            navigator.clipboard.writeText(link).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => btn.textContent = '📋 Copy Link', 2000);
+            }).catch(() => {
+                alert('Failed to copy. Please copy manually.');
+            });
+        }
+    </script>
+</body>
+</html>

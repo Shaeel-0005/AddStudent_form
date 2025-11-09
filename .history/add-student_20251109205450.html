@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    link
+    <title>Add Student - Daily Azkar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0d3b2e;
+            --primary-dark: #082a1f;
+            --accent: #2c5f4d;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --border: #e0e0e0;
+            --danger: #dc3545;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; }
+        body { background: linear-gradient(135deg, #f0f4f2 0%, #e8f5f0 100%); color: #333; padding: 20px; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .container { background: white; max-width: 500px; width: 100%; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .header { text-align: center; padding: 30px 20px; background: linear-gradient(120deg, var(--primary), var(--primary-dark)); color: white; }
+        .header h1 { font-weight: 700; font-size: 1.8rem; margin-bottom: 8px; }
+        .header p { font-size: 1rem; opacity: 0.9; }
+        .card-body { padding: 30px 20px; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--primary); font-size: 0.95rem; }
+        .input-group input { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; font-size: 1rem; transition: all 0.3s ease; background-color: #fafafa; }
+        .input-group input:focus { outline: none; border-color: var(--accent); background-color: white; }
+        .btn { display: block; width: 100%; padding: 16px; background: linear-gradient(110deg, var(--primary), var(--accent)); color: white; font-size: 1.1rem; font-weight: 600; border: none; border-radius: 16px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(13, 59, 46, 0.3); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(13, 59, 46, 0.4); }
+        .btn:disabled { background: #cccccc; cursor: not-allowed; transform: none; }
+        #loading { display: none; text-align: center; color: var(--primary); margin-top: 16px; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📿 Add New Student</h1>
+            <p>Fill details to generate Azkar report link</p>
+        </div>
+        <div class="card-body">
+            <form id="studentForm">
+                <div class="input-group">
+                    <label for="murabiName"><i class="fas fa-user"></i> Murābi Name</label>
+                    <input type="text" id="murabiName" required placeholder="e.g., Ustadh Ahmed">
+                </div>
+                <div class="input-group">
+                    <label for="murabiNumber"><i class="fab fa-whatsapp"></i> Murābi WhatsApp</label>
+                    <input type="text" id="murabiNumber" required placeholder="e.g., 03001234567">
+                </div>
+                <div class="input-group">
+                    <label for="studentName"><i class="fas fa-user-graduate"></i> Student Name</label>
+                    <input type="text" id="studentName" required placeholder="e.g., Ali">
+                </div>
+                <div class="input-group">
+                    <label for="studentNumber"><i class="fab fa-whatsapp"></i> Student WhatsApp (Optional)</label>
+                    <input type="text" id="studentNumber" placeholder="e.g., 03111234567">
+                </div>
+                <button class="btn" type="submit">
+                    <i class="fas fa-paper-plane"></i> Generate Report Link
+                </button>
+                <div id="loading">
+                    <div class="spinner"></div>
+                    <p>Saving and generating link...</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxIW13iSTS18E1gvUnLIvT7xcoITVlWXQAtVE1yx4gTekHIaG15pxRPd626j7VotNXo_A/exec";
+        document.getElementById("studentForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                murabiName: document.getElementById("murabiName").value.trim(),
+                murabiNumber: document.getElementById("murabiNumber").value.trim(),
+                studentName: document.getElementById("studentName").value.trim(),
+                studentNumber: document.getElementById("studentNumber").value.trim()
+            };
+
+            if (!formData.murabiName || !formData.murabiNumber || !formData.studentName) {
+                alert("❌ Please fill all required fields.");
+                return;
+            }
+
+            // Show loader
+            document.getElementById("loading").style.display = "block";
+            document.querySelector(".btn").disabled = true;
+
+            // Call the Google Script
+            google.script.run
+                .withSuccessHandler((result) => {
+                    if (result.success) {
+                        // Redirect to the "Thank You" page
+                        window.location.href = `thank-you.html?student=${encodeURIComponent(result.student)}&link=${encodeURIComponent(result.link)}`;
+                    } else {
+                        alert("❌ Error: " + result.error);
+                    }
+                })
+                .withFailureHandler((err) => {
+                    alert("❌ Server error: " + err);
+                })
+                .withUserObject({ 'murabiName': formData.murabiName, 'murabiNumber': formData.murabiNumber, 'studentName': formData.studentName, 'studentNumber': formData.studentNumber })
+                .addStudent(); // This is the function we will create in Code.gs
+        });
+    </script>
+</body>
+</html>
